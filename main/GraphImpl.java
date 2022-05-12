@@ -42,6 +42,19 @@ public class GraphImpl implements Graph {
       v.add(new EdgeImpl(dest, weight));
       edges.put(src, v);
     }
+    if (edges.containsKey(dest)) {
+      List<Edge> v = edges.get(dest);
+      for (Edge edge : v) {
+        if (edge.getName().equals(src)) {
+          return false;
+        }
+      }
+      v.add(new EdgeImpl(src, weight));
+    } else {
+      List<Edge> v = new ArrayList<>();
+      v.add(new EdgeImpl(src, weight));
+      edges.put(dest, v);
+    }
     return true;
   }
 
@@ -86,12 +99,13 @@ public class GraphImpl implements Graph {
   public int numEdges() {
     List<Edge> v;
     int num_edges = 0;
-    for (int i = 0; i < edges.size(); i++) {
+    for (int i = 0; i < nodes.size(); i++) {
       v = edges.get(keys.get(i));
       if (v != null) {
         num_edges += v.size();
       }
     }
+    num_edges /= 2;
     return num_edges;
   }
 
@@ -112,6 +126,7 @@ public class GraphImpl implements Graph {
     while (unvisited.size() > 0) {
       String shortest = null;
       double shortest_path = Double.POSITIVE_INFINITY;
+      //finds the next node to visit
       for (String s : unvisited) {
         if (djk.get(s) <= shortest_path) {
           shortest = s;
